@@ -44,6 +44,7 @@ SUPPORT_samsung_SOUNDBAR = (
     | SUPPORT_VOLUME_STEP
     | SUPPORT_VOLUME_MUTE
     | SUPPORT_VOLUME_SET
+    | SUPPORT_SUBWOOFER_VOLUME_SET
     | SUPPORT_SELECT_SOURCE
     | SUPPORT_SELECT_SOUND_MODE
     | SUPPORT_TURN_OFF
@@ -86,8 +87,7 @@ class SoundbarMediaPlayer(MediaPlayerEntity):
         self._sound_mode = "standard"
         self._sound_mode_list = []
         self._media_title = ""
-        self._subwoofer_volume = 0
-        
+
     # Run when added to HASS TO LOAD SOURCES
     async def async_added_to_hass(self):
         """Run when entity about to be added."""
@@ -126,9 +126,7 @@ class SoundbarMediaPlayer(MediaPlayerEntity):
         SoundbarApi.send_command(self, sound_mode, "selectsoundmode")
 
     def set_subwoofer_volume(self, volume):
-        # Ensure the volume is within the valid range of -6 to 6
-        volume = max(min(volume, 6), -6)
-        SoundbarApi.send_command(self, volume, "set_subwoofer_volume")
+        SoundbarApi.send_command(self, volume, "set_subwoofer_volume")   
 
     def media_play(self):
         SoundbarApi.send_command(self, "", "play")
@@ -185,11 +183,11 @@ class SoundbarMediaPlayer(MediaPlayerEntity):
     @property
     def sound_mode(self):
         return self._sound_mode
+
+    @property
+    def sound_mode_list(self):
+        return self._sound_mode_list
         
     @property
     def subwoofer_volume_level(self):
         return self._subwoofer_volume
-        
-    @property
-    def sound_mode_list(self):
-        return self._sound_mode_list
