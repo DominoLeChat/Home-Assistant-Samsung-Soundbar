@@ -123,6 +123,14 @@ class SoundbarApi:
         except Exception as error:
             return error
 
+        try:
+            device_subwoofer_volume = data["data"]["value"]["payload"][
+                "x.com.samsung.networkaudio.woofer"
+            ]
+            self._subwoofer_volume = device_subwoofer_volume
+        except Exception as error:
+            return error
+    
     @staticmethod
     def send_command(self, argument, cmdtype):
         request_headers = {"Authorization": "Bearer " + self._api_key}
@@ -182,29 +190,20 @@ class SoundbarApi:
             API_END = "}]}]}"
             API_FULL = API_COMMAND_DATA + API_COMMAND_ARG + API_END
             cmdurl = requests.post(api_command, data=API_FULL, headers=request_headers)
-            
-        elif cmdtype == "set_subwoofer_volume":
-            self.set_subwoofer_volume(argument)
 
-        self.async_schedule_update_ha_state()
-        
-    def set_subwoofer_volume(self, volume):
-        request_headers = {"Authorization": "Bearer " + self._api_key}
-        api_device = API_DEVICES + self._device_id
-        api_command = api_device + "/commands"
-
-        API_COMMAND_DATA = "{'commands':[{'component': 'main','capability': 'execute','command': 'execute', 'arguments': ['/sec/networkaudio/woofer',{'x.com.samsung.networkaudio.woofer':"
-        API_COMMAND_ARG = str(volume)
-        API_END = "}]}]}"
-        API_FULL = API_COMMAND_DATA + API_COMMAND_ARG + API_END
-        cmdurl = requests.post(api_command, data=API_FULL, headers=request_headers)
-
+        elif cmdtype == "set_subwoofer_volume_command":  # set subwoofer volume using API command
+            API_COMMAND_DATA = (
+                "{'commands':[{'component': 'main','capability': 'execute','command': 'execute', 'arguments': ['/sec/networkaudio/woofer',{'x.com.samsung.networkaudio.woofer':"
+            )
+            API_COMMAND_ARG = str(argument)
+            API_END = "}]}]}"
+            API_FULL = API_COMMAND_DATA + API_COMMAND_ARG + API_END
+            cmdurl = requests.post(
+                api_command, data=API_FULL, headers=request_headers
+            )
+    
         self.async_schedule_update_ha_state()
 
-    def send_command(self, argument, cmdtype):
-        request_headers = {"Authorization": "Bearer " + self._api_key}
-        api_device = API_DEVICES + self._device_id
-        api_command = api_device + "/commands"
 
 class SoundbarApiSwitch:
     @staticmethod
