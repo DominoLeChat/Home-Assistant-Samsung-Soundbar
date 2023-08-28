@@ -94,6 +94,7 @@ class SoundbarDevice(Entity):
         self._api_key = api_key
         self._max_volume = max_volume
         self._volume = 1
+        self._subwoofer_volume = 0  # Initialize subwoofer volume to 0
         self._muted = False
         self._playing = True
         self._state = "on"
@@ -130,14 +131,7 @@ class SoundbarDevice(Entity):
     @property
     def max_volume(self):
         return self._max_volume
-    
-    
-
-
-
-
-
-
-
-
-                
+        
+    @property
+    def subwoofer_volume_level(self):
+        return self._subwoofer_volume
